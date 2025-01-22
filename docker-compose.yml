@@ -1,0 +1,30 @@
+version: '3.1'
+services:
+    db:
+        image: mariadb
+        container_name: nplp_mariadb_1
+        environment:
+            MYSQL_ROOT_PASSWORD: 'root'
+            MYSQL_DATABASE: 'nplp'
+        ports:
+            - "3306:3306"
+        volumes:
+            - dbnplp:/var/lib/mysql
+
+    phpmyadmin:
+        image: phpmyadmin
+        ports:
+            - '0.0.0.0:8083:80'
+        environment:
+            - PMA_ARBITRARY=1
+            - UPLOAD_LIMIT=10000M
+
+    mailpit:
+        image: axllent/mailpit
+        logging:
+            driver: 'none'
+        ports:
+            - 1025:1025
+            - 8025:8025
+volumes:
+    dbnplp:

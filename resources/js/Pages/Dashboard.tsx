@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
+import {Button} from "@/components/ui/button";
 
 export default function Dashboard() {
     return (
@@ -18,6 +19,7 @@ export default function Dashboard() {
                         <div className="p-6 text-gray-900">
                             You're logged in!
                         </div>
+                        <Button>Test button</Button>
                     </div>
                 </div>
             </div>
