@@ -288,7 +288,7 @@ export default function Index({ auth, songs }: IndexProps) {
 									className="flex-1 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
 									disabled={songsByRound[round]?.length === 0}
 								>
-									Round {round}{" "}
+									Manche {round}{" "}
 									{songsByRound[round]?.length > 0 &&
 										`(${songsByRound[round].length})`}
 								</TabsTrigger>

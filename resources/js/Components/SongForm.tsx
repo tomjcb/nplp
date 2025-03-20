@@ -123,7 +123,7 @@ export function SongForm({ song, isEditing = false, onSuccess }: SongFormProps) 
 			</div>
 
 			<div>
-				<Label htmlFor="round">Round</Label>
+				<Label htmlFor="round">Manche</Label>
 				<Input
 					id="round"
 					type="number"
