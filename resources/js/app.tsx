@@ -8,6 +8,19 @@ import {ToastContainer} from "react-toastify";
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+if (import.meta.env.VITE_APP_ENV !== 'production') {
+	window.onerror = (event, source, lineno, colno, err) => {
+		// must be within function call because that's when the element is defined for sure.
+		const ErrorOverlay = customElements.get('vite-error-overlay');
+		// don't open outside vite environment
+		if (!ErrorOverlay) {
+			return;
+		}
+		const overlay = new ErrorOverlay(err);
+		document.body.appendChild(overlay);
+	};
+}
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) =>

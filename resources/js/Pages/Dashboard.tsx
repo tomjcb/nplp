@@ -1,28 +1,26 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import {Button} from "@/components/ui/button";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head } from "@inertiajs/react";
+import { Button } from "@/Components/ui/button";
+import Player from "@/Pages/Youtube/Player";
+import Lyrics from "@/Pages/Youtube/Lyrics";
+import { useState } from "react";
 
 export default function Dashboard() {
-    return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
-                </h2>
-            }
-        >
-            <Head title="Dashboard" />
-
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            You're logged in!
-                        </div>
-                        <Button>Test button</Button>
-                    </div>
-                </div>
-            </div>
-        </AuthenticatedLayout>
-    );
+	const [displayLyrics, setDisplayLyrics] = useState(false);
+	return (
+		<AuthenticatedLayout
+			header={
+				<></>
+			}
+		>
+			{displayLyrics && <Lyrics lyrics={"Never gonna give you up\nNever gonna let you down"} />}
+			<Player
+				videoUrl={'/videos/videoplayback.mp4'}
+				stopAt="1:30"
+				onVideoEnd={() => console.log("Vidéo terminée")}
+				onVideoStop={() => setDisplayLyrics(true)}
+				className="w-full h-[200px]"
+			/>
+		</AuthenticatedLayout>
+	);
 }

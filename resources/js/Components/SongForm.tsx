@@ -1,186 +1,178 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { router } from '@inertiajs/react'
+import { useForm } from '@inertiajs/react'
+import { Button } from "@/Components/ui/button"
+import { Input } from "@/Components/ui/input"
+import { Label } from "@/Components/ui/label"
+import { Textarea } from "@/Components/ui/textarea"
+import { toast } from "react-toastify"
+import { Switch } from "@/Components/ui/switch"
 
-import { Button } from "@/components/ui/button"
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import {toast} from "react-toastify";
-
-// Définition du schéma de validation
-const songFormSchema = z.object({
-	id: z.number().optional(),
-	title: z.string().min(1, "Le titre est requis"),
-	artist: z.string().min(1, "L'artiste est requis"),
-	youtube_link: z.string().url("Le lien YouTube doit être une URL valide"),
-	round: z.string().min(1, "Le round est requis"),
-	points: z.number().min(0, "Les points doivent être positifs"),
-	lyrics_to_find: z.string().min(1, "Les paroles à trouver sont requises"),
-	lyrics_time_code: z.string().min(1, "Le time code est requis"),
-})
-
-type SongFormValues = z.infer<typeof songFormSchema>
-
-// Props du composant
-interface SongFormProps {
-	song?: SongFormValues
-	isEditing?: boolean
+interface Song {
+	id: number
+	title: string
+	artist: string
+	video_file: string
+	round: number
+	points: number
+	lyrics_to_find: string
+	lyrics_time_code: string
+	has_been_played: boolean
 }
 
-export function SongForm({ song, isEditing = false }: SongFormProps) {
-	// Initialiser le formulaire avec react-hook-form
-	const form = useForm<SongFormValues>({
-		resolver: zodResolver(songFormSchema),
-		defaultValues: song || {
-			title: "",
-			artist: "",
-			youtube_link: "",
-			round: "",
-			points: 0,
-			lyrics_to_find: "",
-			lyrics_time_code: "",
-		},
+interface SongFormProps {
+	song?: Song
+	isEditing?: boolean
+	onSuccess?: () => void
+}
+
+export function SongForm({ song, isEditing = false, onSuccess }: SongFormProps) {
+	const { data, setData, post, put, processing, progress, errors, reset } = useForm({
+		title: song?.title || '',
+		artist: song?.artist || '',
+		video_file: null as File | null,
+		round: song?.round || 1,
+		points: song?.points || 0,
+		lyrics_to_find: song?.lyrics_to_find || '',
+		lyrics_time_code: song?.lyrics_time_code || '',
+		has_been_played: song?.has_been_played || false,
+		_method: isEditing ? 'PUT' : 'POST', // Pour Laravel
 	})
 
-	// Gestion de la soumission
-	function onSubmit(data: SongFormValues) {
+	const onSubmit = (e: React.FormEvent) => {
+		e.preventDefault()
+		
+		// Validation côté client
+		if (!data.title.trim()) {
+			toast.error("Le titre est requis")
+			return
+		}
+		if (!data.artist.trim()) {
+			toast.error("L'artiste est requis")
+			return
+		}
+		if (!isEditing && !data.video_file) {
+			toast.error("Le fichier vidéo est requis")
+			return
+		}
+		if (!data.lyrics_to_find.trim()) {
+			toast.error("Les paroles à trouver sont requises")
+			return
+		}
+
+		// Pour les formulaires avec fichiers, Inertia détecte automatiquement 
+		// qu'il faut utiliser FormData si un fichier est présent
+		const options = {
+			forceFormData: true, // Force l'utilisation de FormData
+			preserveScroll: true,
+			onSuccess: () => {
+				toast.success(isEditing ? "Chanson mise à jour avec succès" : "Chanson créée avec succès")
+				onSuccess?.()
+			},
+			onError: (errors: any) => {
+				console.error(errors)
+				toast.error("Une erreur est survenue lors de l'enregistrement")
+			}
+		}
+
+		// Utilisation de post pour les deux cas car avec des fichiers,
+		// nous devons utiliser POST avec _method pour simuler PUT
+		// Le champ _method est déjà défini dans data et sera envoyé avec le formulaire
+		// Laravel reconnaît ce champ et traite la requête comme un PUT si _method='PUT'
 		if (isEditing && song) {
-			router.put(`/songs/${song.id}`, data, {
-				onSuccess: () => {
-					toast.success("Chanson mise à jour")
-				},
-			})
+			post(route('songs.update', song.id), options)
 		} else {
-			router.post('/songs', data, {
-				onSuccess: () => {
-					toast.success("Chanson créée")
-				},
-			})
+			post(route('songs.store'), options)
 		}
 	}
 
 	return (
-		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-				<FormField
-					control={form.control}
-					name="title"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Titre</FormLabel>
-							<FormControl>
-								<Input placeholder="Entrez le titre" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
+		<form onSubmit={onSubmit} className="space-y-4">
+			<div>
+				<Label htmlFor="title">Titre</Label>
+				<Input
+					id="title"
+					type="text"
+					value={data.title}
+					onChange={e => setData('title', e.target.value)}
+					required
 				/>
+				{errors.title && <div className="text-red-500 text-sm">{errors.title}</div>}
+			</div>
 
-				<FormField
-					control={form.control}
-					name="artist"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Artiste</FormLabel>
-							<FormControl>
-								<Input placeholder="Entrez l'artiste" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
+			<div>
+				<Label htmlFor="artist">Artiste</Label>
+				<Input
+					id="artist"
+					type="text"
+					value={data.artist}
+					onChange={e => setData('artist', e.target.value)}
+					required
 				/>
+				{errors.artist && <div className="text-red-500 text-sm">{errors.artist}</div>}
+			</div>
 
-				<FormField
-					control={form.control}
-					name="youtube_link"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Lien YouTube</FormLabel>
-							<FormControl>
-								<Input placeholder="https://youtube.com/..." {...field} />
-							</FormControl>
-							<FormDescription>
-								Collez le lien YouTube complet de la chanson
-							</FormDescription>
-							<FormMessage />
-						</FormItem>
-					)}
+			<div>
+				<Label htmlFor="video_file">Fichier vidéo</Label>
+				<Input
+					id="video_file"
+					type="file"
+					accept="video/*"
+					onChange={e => setData('video_file', e.target.files?.[0] || null)}
+					required={!isEditing}
 				/>
+				{errors.video_file && <div className="text-red-500 text-sm">{errors.video_file}</div>}
+			</div>
 
-				<FormField
-					control={form.control}
-					name="round"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Round</FormLabel>
-							<FormControl>
-								<Input placeholder="Round 1" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
+			<div>
+				<Label htmlFor="round">Round</Label>
+				<Input
+					id="round"
+					type="number"
+					min="1"
+					value={data.round}
+					onChange={e => setData('round', parseInt(e.target.value))}
+					required
 				/>
+				{errors.round && <div className="text-red-500 text-sm">{errors.round}</div>}
+			</div>
 
-				<FormField
-					control={form.control}
-					name="points"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Points</FormLabel>
-							<FormControl>
-								<Input
-									type="number"
-									placeholder="100"
-									{...field}
-									onChange={(e) => field.onChange(parseInt(e.target.value))}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
+			<div>
+				<Label htmlFor="points">Points</Label>
+				<Input
+					id="points"
+					type="number"
+					min="0"
+					value={data.points}
+					onChange={e => setData('points', parseInt(e.target.value))}
+					required
 				/>
+				{errors.points && <div className="text-red-500 text-sm">{errors.points}</div>}
+			</div>
 
-				<FormField
-					control={form.control}
-					name="lyrics_to_find"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Paroles à trouver</FormLabel>
-							<FormControl>
-								<Input placeholder="Entrez les paroles" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
+			<div>
+				<Label htmlFor="lyrics_to_find">Paroles à trouver</Label>
+				<Textarea
+					id="lyrics_to_find"
+					value={data.lyrics_to_find}
+					onChange={e => setData('lyrics_to_find', e.target.value)}
+					required
 				/>
+				{errors.lyrics_to_find && <div className="text-red-500 text-sm">{errors.lyrics_to_find}</div>}
+			</div>
 
-				<FormField
-					control={form.control}
-					name="lyrics_time_code"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Time Code</FormLabel>
-							<FormControl>
-								<Input placeholder="1:30" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
+			<div className="flex items-center space-x-2">
+				<Switch
+					id="has_been_played"
+					checked={data.has_been_played}
+					onCheckedChange={checked => setData('has_been_played', checked)}
 				/>
+				<Label htmlFor="has_been_played">A déjà été jouée</Label>
+			</div>
 
-				<Button type="submit">
-					{isEditing ? "Mettre à jour" : "Créer"} la chanson
+			<div className="flex justify-end">
+				<Button type="submit" disabled={processing}>
+					{isEditing ? 'Mettre à jour' : 'Créer'}
 				</Button>
-			</form>
-		</Form>
+			</div>
+		</form>
 	)
 }

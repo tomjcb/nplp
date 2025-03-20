@@ -17,11 +17,12 @@ export interface Song {
 	id: number
 	title: string
 	artist: string
-	youtube_link: string
-	round: string
+	video_file: string
+	round: number
 	points: number
 	lyrics_to_find: string
 	lyrics_time_code: string
 	created_at: string
 	updated_at: string
+	has_been_played: boolean
 }
