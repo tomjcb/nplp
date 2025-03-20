@@ -179,6 +179,12 @@ export default function Index({ auth, songs }: IndexProps) {
 		return grouped;
 	}, [filteredSongs, rounds]);
 
+	const sortFieldsTranslation = {
+		title: "Titre",
+		points: "Points",
+		lyrics_length: "Nombre de mots",
+	};
+
 	return (
 		<AuthenticatedLayout>
 			<div className="py-12">
@@ -247,7 +253,7 @@ export default function Index({ auth, songs }: IndexProps) {
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button variant="outline" className="gap-1">
-										Trier par {getSortIcon(sortField)}
+										Trier par ({sortFieldsTranslation[sortField]}) {getSortIcon(sortField)}
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent>
