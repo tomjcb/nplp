@@ -26,6 +26,12 @@ class DatabaseSeeder extends Seeder
 		User::factory()->create([
 			'name' => 'Tom J.',
 			'email' => 'tom@mail.fr',
+			'password' => 'password',
+		]);
+		User::factory()->create([
+			'name' => 'Lea D.',
+			'email' => 'desbourdes.francais@gmail.com',
+			'password' => 'tchoupileboss',
 		]);
 
 		Song::factory()->count(40)->create();

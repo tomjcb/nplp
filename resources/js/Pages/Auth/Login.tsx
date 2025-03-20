@@ -109,6 +109,7 @@ export default function Login({ status, canResetPassword }: { status?: string; c
                                             type="checkbox"
                                             id="remember"
                                             checked={data.remember}
+					    //@ts-ignore
                                             onChange={(e) => setData("remember", e.target.checked)}
                                             className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                         />

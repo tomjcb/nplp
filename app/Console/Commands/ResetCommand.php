@@ -16,7 +16,7 @@ class ResetCommand extends Command
 	public function handle(): void
 	{
 		$nplp_db_name = env('NPLP_DATABASE', 'nplp');
-		DB::statement("CREATE DATABASE IF NOT EXISTS {$nplp_db_name}");
+		//DB::statement("CREATE DATABASE IF NOT EXISTS {$nplp_db_name}");
 
 		$this->info("Executing migrate:fresh...");
 		$this->call('migrate:fresh');
