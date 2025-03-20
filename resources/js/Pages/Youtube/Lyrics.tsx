@@ -4,25 +4,27 @@ import { Card } from "@/Components/ui/card";
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
 
+export // Fonction pour diviser correctement les mots, en séparant juste les apostrophes
+const countWords = (text: string): number => {
+	// Prétraitement pour normaliser les espaces
+	const cleanText = text.trim().replace(/\s+/g, ' ');
+	
+	// Compter les espaces pour obtenir le nombre de mots de base
+	const baseCount = cleanText.split(' ').length;
+	
+	// Compter les apostrophes qui séparent des mots (l', d', j', etc.)
+	const apostrophes = (cleanText.match(/\w'\w/g) || []).length;
+	
+	// Le nombre total est la somme
+	return baseCount + apostrophes;
+};
+
 export default function Lyrics(props: { lyrics: string; className?: string }) {
 	const [revealed, setRevealed] = useState<boolean>(false);
 	const [halfRevealed, setHalfRevealed] = useState<boolean>(false);
 	const [contentBlurred, setContentBlurred] = useState<boolean>(true);
 
-	// Fonction pour diviser correctement les mots, en séparant juste les apostrophes
-	const countWords = (text: string): number => {
-		// Prétraitement pour normaliser les espaces
-		const cleanText = text.trim().replace(/\s+/g, ' ');
-		
-		// Compter les espaces pour obtenir le nombre de mots de base
-		const baseCount = cleanText.split(' ').length;
-		
-		// Compter les apostrophes qui séparent des mots (l', d', j', etc.)
-		const apostrophes = (cleanText.match(/\w'\w/g) || []).length;
-		
-		// Le nombre total est la somme
-		return baseCount + apostrophes;
-	};
+	
 
 	// Trouver les indices de chaque mot, en comptant correctement les apostrophes
 	const getWordIndices = (text: string): number[] => {

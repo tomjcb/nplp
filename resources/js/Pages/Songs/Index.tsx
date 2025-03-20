@@ -49,6 +49,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/Components/ui/tooltip";
+import { countWords } from "@/Pages/Youtube/Lyrics";
 
 interface Song {
 	id: number;
@@ -331,19 +332,7 @@ export default function Index({ auth, songs }: IndexProps) {
 													<p className="text-lg text-gray-500">
 														Mots:{" "}
 														<b>
-															{
-																song.lyrics_to_find
-																	.split(
-																		/\s+/
-																	)
-																	.filter(
-																		(
-																			word
-																		) =>
-																			word.length >
-																			0
-																	).length
-															}
+															{countWords(song.lyrics_to_find)}
 														</b>
 													</p>
 													{song.video_file == ' ' && <p className="text-gray-500 italic">Pas de vidéo</p>}
