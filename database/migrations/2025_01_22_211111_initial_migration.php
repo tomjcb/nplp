@@ -25,7 +25,6 @@ return new class extends Migration {
             $table->string('artist');
             $table->string('video_file');
             $table->string('lyrics_to_find');
-            $table->string('lyrics_time_code');
 
 			$table->softDeletes();
 

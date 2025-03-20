@@ -127,7 +127,7 @@ export function SongForm({ song, isEditing = false, onSuccess }: SongFormProps) 
 				<Input
 					id="round"
 					type="number"
-					min="1"
+					min="0"
 					value={data.round}
 					onChange={e => setData('round', parseInt(e.target.value))}
 					required

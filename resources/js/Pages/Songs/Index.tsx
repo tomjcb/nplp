@@ -346,6 +346,7 @@ export default function Index({ auth, songs }: IndexProps) {
 															}
 														</b>
 													</p>
+													{song.video_file == ' ' && <p className="text-gray-500 italic">Pas de vidéo</p>}
 												</CardContent>
 												<CardFooter className="flex justify-between">
 													<div className="flex space-x-2">

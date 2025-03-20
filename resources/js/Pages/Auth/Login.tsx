@@ -125,28 +125,9 @@ export default function Login({ status, canResetPassword }: { status?: string; c
                                     >
                                         Se connecter
                                     </Button>
-
-                                    {canResetPassword && (
-                                        <Link
-                                            href={route("password.request")}
-                                            className="text-sm text-indigo-600 hover:text-indigo-500"
-                                        >
-                                            Mot de passe oublié ?
-                                        </Link>
-                                    )}
                                 </CardFooter>
                             </form>
                         </Card>
-
-                        <div className="text-center text-sm text-gray-600">
-                            Pas encore de compte ?{" "}
-                            <Link
-                                href={route("register")}
-                                className="font-medium text-indigo-600 hover:text-indigo-500"
-                            >
-                                Créer un compte
-                            </Link>
-                        </div>
                     </div>
                 </div>
 
