@@ -82,7 +82,7 @@ export default function Show({ song }: ShowProps) {
 											<span className="font-medium">{song.points}</span>
 										</div>
 										<div className="flex justify-between">
-											<span className="text-gray-500">Round</span>
+											<span className="text-gray-500">Manche</span>
 											<span className="font-medium">{song.round}</span>
 										</div>
 									</div>
